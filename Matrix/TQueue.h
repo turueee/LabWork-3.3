@@ -62,7 +62,7 @@ inline TQueue<T>::TQueue(size_t capacity_) : size(0), capacity(capacity_)
     if (capacity)
         memory = new T[capacity];
     else
-        memory == nullptr;
+        memory = nullptr;
 }
 
 template<class T>
@@ -219,7 +219,7 @@ inline T TQueue<T>::Get()
     if (size != 0)
     {
         T elem(std::move(memory[0]));
-        for (size_t i = 0; i < size;++i)
+        for (size_t i = 0; i < size-1;++i)
             memory[i] = std::move(memory[i+1]);
         size--;
         return elem;
