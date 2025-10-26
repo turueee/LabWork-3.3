@@ -3,14 +3,16 @@
 #include "TString.h"
 #include "TStack.h"
 #include "TQueue.h"
+#include "TMultyStack.h"
 
 
 
 int main()
 {
-	TQueue<int> a(2);
-	a.Put(3);
-	a.Put(6);
-	a.Get();
+	TMultyStack<int> a(2, 2);
+	a.Push(1, 2);
+	a.Push(0, 4);
+	a.Push(0, 7);
+	a.Push(0, 3);
 	std::cout << a;
 }

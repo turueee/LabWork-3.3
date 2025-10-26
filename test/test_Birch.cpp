@@ -2,6 +2,7 @@
 #include "TString.h"
 #include "TQueue.h"
 #include "TStack.h"
+#include "TMultyStack.h"
 
 #include <gtest.h>
 
@@ -537,4 +538,274 @@ TEST(TStack, can_load_from_file)
     ASSERT_NO_THROW(loadedStack.ReadFromFile("test_stack.txt"));
 
     EXPECT_TRUE(stack == loadedStack);
+}
+
+TEST(TMultyStack, can_create_with_positive_parameters)
+{
+    ASSERT_NO_THROW(TMultyStack<int> stack(3, 5));
+    ASSERT_NO_THROW(TMultyStack<int> stack(1, 1));
+}
+
+TEST(TMultyStack, can_create_default)
+{
+    ASSERT_NO_THROW(TMultyStack<int> stack);
+}
+
+TEST(TMultyStack, can_copy_stack)
+{
+    TMultyStack<int> stack(2, 3);
+    stack.Push(0, 1);
+    stack.Push(1, 2);
+
+    TMultyStack<int> stackCopy(stack);
+    EXPECT_TRUE(stack == stackCopy);
+}
+
+TEST(TMultyStack, can_move_stack)
+{
+    TMultyStack<int> stack(2, 3);
+    stack.Push(0, 1);
+    stack.Push(1, 2);
+
+    TMultyStack<int> stackMoved(std::move(stack));
+    EXPECT_EQ(1, stackMoved(0, 0));
+    EXPECT_EQ(2, stackMoved(1, 0));
+    EXPECT_EQ(0, stack.Count());
+}
+
+TEST(TMultyStack, can_get_capacity)
+{
+    TMultyStack<int> stack(3, 4);
+    EXPECT_EQ(12, stack.Capacity());
+}
+
+TEST(TMultyStack, can_get_count)
+{
+    TMultyStack<int> stack(5, 2);
+    EXPECT_EQ(5, stack.Count());
+}
+
+TEST(TMultyStack, can_get_size_of_stack)
+{
+    TMultyStack<int> stack(3, 4);
+    stack.Push(0, 1);
+    stack.Push(0, 2);
+
+    EXPECT_EQ(2, stack.Size(0));
+    EXPECT_EQ(0, stack.Size(1));
+}
+
+TEST(TMultyStack, throw_get_size_invalid_stack)
+{
+    TMultyStack<int> stack(2, 3);
+
+    ASSERT_ANY_THROW(stack.Size(2));
+    ASSERT_ANY_THROW(stack.Size(5));
+}
+
+TEST(TMultyStack, can_check_empty)
+{
+    TMultyStack<int> stack(3, 2);
+
+    EXPECT_TRUE(stack.IsEmpty(0));
+    EXPECT_TRUE(stack.IsEmpty(1));
+    EXPECT_TRUE(stack.IsEmpty(2));
+
+    stack.Push(1, 5);
+    EXPECT_FALSE(stack.IsEmpty(1));
+}
+
+TEST(TMultyStack, throw_check_empty_invalid_stack)
+{
+    TMultyStack<int> stack(2, 3);
+
+    ASSERT_ANY_THROW(stack.IsEmpty(2));
+}
+
+TEST(TMultyStack, can_check_full)
+{
+    TMultyStack<int> stack(2, 2);
+    stack.Push(0, 1);
+    stack.Push(0, 2);
+
+    EXPECT_TRUE(stack.IsFull(0));
+    EXPECT_FALSE(stack.IsFull(1));
+}
+
+TEST(TMultyStack, throw_check_full_invalid_stack)
+{
+    TMultyStack<int> stack(2, 3);
+
+    ASSERT_ANY_THROW(stack.IsFull(2));
+}
+
+TEST(TMultyStack, can_push_elements)
+{
+    TMultyStack<int> stack(3, 2);
+
+    ASSERT_NO_THROW(stack.Push(0, 1));
+    ASSERT_NO_THROW(stack.Push(1, 2));
+    ASSERT_NO_THROW(stack.Push(2, 3));
+
+    EXPECT_EQ(1, stack.Size(0));
+    EXPECT_EQ(1, stack.Size(1));
+    EXPECT_EQ(1, stack.Size(2));
+}
+
+TEST(TMultyStack, throw_push_invalid_stack)
+{
+    TMultyStack<int> stack(2, 3);
+
+    ASSERT_ANY_THROW(stack.Push(2, 1));
+}
+
+TEST(TMultyStack, can_pop_elements)
+{
+    TMultyStack<int> stack(2, 3);
+    stack.Push(0, 1);
+    stack.Push(0, 2);
+    stack.Push(1, 3);
+
+    EXPECT_EQ(2, stack.Pop(0));
+    EXPECT_EQ(1, stack.Pop(0));
+    EXPECT_EQ(3, stack.Pop(1));
+}
+
+TEST(TMultyStack, throw_pop_invalid_stack)
+{
+    TMultyStack<int> stack(2, 3);
+
+    ASSERT_ANY_THROW(stack.Pop(2));
+}
+
+TEST(TMultyStack, throw_pop_empty_stack)
+{
+    TMultyStack<int> stack(2, 3);
+
+    ASSERT_ANY_THROW(stack.Pop(0));
+}
+
+TEST(TMultyStack, can_access_element)
+{
+    TMultyStack<int> stack(2, 3);
+    stack.Push(0, 1);
+    stack.Push(0, 2);
+    stack.Push(1, 3);
+
+    EXPECT_EQ(1, stack(0, 0));
+    EXPECT_EQ(2, stack(0, 1));
+    EXPECT_EQ(3, stack(1, 0));
+}
+
+TEST(TMultyStack, throw_access_invalid_stack)
+{
+    TMultyStack<int> stack(2, 3);
+
+    ASSERT_ANY_THROW(stack(2, 0));
+}
+
+TEST(TMultyStack, throw_access_invalid_position)
+{
+    TMultyStack<int> stack(2, 3);
+    stack.Push(0, 1);
+
+    ASSERT_ANY_THROW(stack(0, 1));
+    ASSERT_ANY_THROW(stack(1, 0));
+}
+
+TEST(TMultyStack, can_check_equality)
+{
+    TMultyStack<int> stack1(2, 3);
+    stack1.Push(0, 1);
+    stack1.Push(1, 2);
+
+    TMultyStack<int> stack2(2, 3);
+    stack2.Push(0, 1);
+    stack2.Push(1, 2);
+
+    EXPECT_TRUE(stack1 == stack2);
+}
+
+TEST(TMultyStack, can_check_inequality)
+{
+    TMultyStack<int> stack1(2, 3);
+    stack1.Push(0, 1);
+    stack1.Push(1, 2);
+
+    TMultyStack<int> stack2(2, 3);
+    stack2.Push(0, 1);
+    stack2.Push(1, 3);
+
+    EXPECT_TRUE(stack1 != stack2);
+}
+
+TEST(TMultyStack, can_assignment)
+{
+    TMultyStack<int> stack1(2, 3);
+    stack1.Push(0, 1);
+    stack1.Push(1, 2);
+
+    TMultyStack<int> stack2;
+    stack2 = stack1;
+
+    EXPECT_TRUE(stack1 == stack2);
+}
+
+TEST(TMultyStack, can_move_assignment)
+{
+    TMultyStack<int> stack1(2, 3);
+    stack1.Push(0, 1);
+    stack1.Push(1, 2);
+
+    TMultyStack<int> stack2;
+    stack2 = std::move(stack1);
+
+    EXPECT_EQ(1, stack2(0, 0));
+    EXPECT_EQ(2, stack2(1, 0));
+    EXPECT_EQ(0, stack1.Count());
+}
+
+TEST(TMultyStack, repack_works_correctly)
+{
+    TMultyStack<int> stack(3, 2);
+    stack.Push(0, 1);
+    stack.Push(0, 2);
+    ASSERT_NO_THROW(stack.Push(0, 5));
+
+    EXPECT_EQ(3, stack.Size(0));
+
+    EXPECT_TRUE(stack.Size(1) == 0 || stack.Size(1) == 1);
+    EXPECT_TRUE(stack.Size(2) == 0 || stack.Size(2) == 1);
+}
+
+TEST(TMultyStack, can_handle_multiple_operations)
+{
+    TMultyStack<int> stack(2, 3);
+
+    stack.Push(0, 1);
+    stack.Push(0, 2);
+    stack.Push(1, 3);
+
+    EXPECT_EQ(2, stack.Pop(0));
+    stack.Push(0, 4);
+    stack.Push(1, 5);
+
+    EXPECT_EQ(4, stack.Pop(0));
+    EXPECT_EQ(1, stack.Pop(0));
+    EXPECT_EQ(5, stack.Pop(1));
+    EXPECT_EQ(3, stack.Pop(1));
+}
+
+TEST(TMultyStack, maintains_lifo_order_within_each_stack)
+{
+    TMultyStack<int> stack(2, 3);
+    stack.Push(0, 1);
+    stack.Push(0, 2);
+    stack.Push(1, 3);
+    stack.Push(1, 4);
+
+    EXPECT_EQ(2, stack.Pop(0));
+    EXPECT_EQ(1, stack.Pop(0));
+    EXPECT_EQ(4, stack.Pop(1));
+    EXPECT_EQ(3, stack.Pop(1));
 }
