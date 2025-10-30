@@ -9,10 +9,16 @@
 
 int main()
 {
-	TMultyStack<int> a(2, 2);
-	a.Push(1, 2);
-	a.Push(0, 4);
-	a.Push(0, 7);
-	a.Push(0, 3);
-	std::cout << a;
+	TMultyStack<char> d(3, 3);
+	d.Push(0, 'a');
+	d.Push(0, 'b');
+	d.Push(0, 'c');
+	d.Push(1, 'f');
+	d.Push(1, 'g');
+	d.Push(1, 'h');
+	d.Push(2, 'j');
+	cout << d;
+	d.Push(1, 'k');
+	cout << d;
+	return 0;
 }

@@ -36,6 +36,9 @@ public:
 	bool IsEmpty(size_t stackpos) const;
 	void Push(size_t stackpos, const T& elem);
 	T Pop(size_t stackpos);
+	T FindMin() const;
+	void SaveToFile(const std::string& filename) const;
+	void LoadFromFile(const std::string& filename);
 
 	template<class O>
 	friend std::ostream& operator<<(std::ostream& os, const TMultyStack<O>& stack);
@@ -313,7 +316,7 @@ std::ostream& operator<<(std::ostream& os, const TMultyStack<O>& stack)
 			os << ",";
 		}
 	}
-	os << "}";
+	os << "}\n";
 	return os;
 }
 
@@ -335,4 +338,119 @@ std::istream& operator>>(std::istream& is, TMultyStack<I>& stack)
 	}
 	stack = std::move(temp);
 	return is;
+}
+
+template<class T>
+inline T TMultyStack<T>::FindMin() const
+{
+	if (capacity == 0 || count == 0)
+		ERROR("empty_stack");
+
+	bool found = false;
+	T minElem;
+	for (size_t i = 0; i < count; ++i)
+	{
+		if (!this->IsEmpty(i))
+		{
+			minElem = data[stacksBegin[i]];
+			found = true;
+			break;
+		}
+	}
+
+	if (!found)
+		ERROR("all_stacks_empty");
+	for (size_t i = 0; i < count; ++i)
+	{
+		if (!this->IsEmpty(i))
+		{
+			for (size_t j = stacksBegin[i]; j < starts[i]; ++j)
+			{
+				if (data[j] < minElem)
+					minElem = data[j];
+			}
+		}
+	}
+
+	return minElem;
+}
+
+template<class T>
+inline void TMultyStack<T>::SaveToFile(const std::string& filename) const
+{
+	std::ofstream file(filename, std::ios::binary);
+	if (!file.is_open())
+		ERROR("cannot_open_file");
+	file.write(reinterpret_cast<const char*>(&capacity), sizeof(capacity));
+	file.write(reinterpret_cast<const char*>(&count), sizeof(count));
+	if (capacity > 0)
+	{
+		for (size_t i = 0; i < capacity; ++i)
+		{
+			file.write(reinterpret_cast<const char*>(&data[i]), sizeof(T));
+		}
+	}
+	if (count > 0)
+	{
+		for (size_t i = 0; i < count; ++i)
+		{
+			file.write(reinterpret_cast<const char*>(&stacksBegin[i]), sizeof(size_t));
+		}
+	}
+	if (count > 0)
+	{
+		for (size_t i = 0; i < count; ++i)
+		{
+			file.write(reinterpret_cast<const char*>(&starts[i]), sizeof(size_t));
+		}
+	}
+
+	file.close();
+}
+
+template<class T>
+inline void TMultyStack<T>::LoadFromFile(const std::string& filename)
+{
+	std::ifstream file(filename, std::ios::binary);
+	if (!file.is_open())
+		ERROR("cannot_open_file");
+	if (data) delete[] data;
+	if (stacksBegin) delete[] stacksBegin;
+	if (starts) delete[] starts;
+	file.read(reinterpret_cast<char*>(&capacity), sizeof(capacity));
+	file.read(reinterpret_cast<char*>(&count), sizeof(count));
+	if (capacity > 0)
+	{
+		data = new T[capacity];
+		for (size_t i = 0; i < capacity; ++i)
+		{
+			file.read(reinterpret_cast<char*>(&data[i]), sizeof(T));
+		}
+	}
+	else
+	{
+		data = nullptr;
+	}
+
+	if (count > 0)
+	{
+		stacksBegin = new size_t[count];
+		starts = new size_t[count];
+		for (size_t i = 0; i < count; ++i)
+		{
+			file.read(reinterpret_cast<char*>(&stacksBegin[i]), sizeof(size_t));
+		}
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			file.read(reinterpret_cast<char*>(&starts[i]), sizeof(size_t));
+		}
+	}
+	else
+	{
+		stacksBegin = nullptr;
+		starts = nullptr;
+	}
+
+	file.close();
 }
