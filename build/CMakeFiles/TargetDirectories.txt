@@ -1,8 +1,0 @@
-C:/Users/turus/Desktop/LabWork-3.3/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/turus/Desktop/LabWork-3.3/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/turus/Desktop/LabWork-3.3/build/Main/CMakeFiles/Application.dir
-C:/Users/turus/Desktop/LabWork-3.3/build/TString/CMakeFiles/StringLibrary.dir
-C:/Users/turus/Desktop/LabWork-3.3/build/TError/CMakeFiles/ErrorLibrary.dir
-C:/Users/turus/Desktop/LabWork-3.3/build/Matrix/CMakeFiles/MatrixLibrary.dir
-C:/Users/turus/Desktop/LabWork-3.3/build/test/CMakeFiles/ComplexTest.dir
-C:/Users/turus/Desktop/LabWork-3.3/build/gtest/CMakeFiles/gtest.dir
